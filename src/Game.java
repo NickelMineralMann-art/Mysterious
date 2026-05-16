@@ -15,6 +15,7 @@ public class Game extends JFrame implements Runnable{
     public int mapWidth = 15;
     public int mapHeight = 15;
     public ArrayList<Texture> textures;
+    public ArrayList<Sprite> sprites;
 
     public Camera camera;
     public Screen screen;
@@ -55,8 +56,12 @@ public class Game extends JFrame implements Runnable{
         textures.add(Texture.brick);
         textures.add(Texture.bluestone);
         textures.add(Texture.stone);
-        
+
+        sprites = new ArrayList<>();
         screen = new Screen(map, mapWidth, mapHeight, textures, 640, 480);
+
+        sprites.add(new Sprite(3.5, 3.5, 1));
+
         camera = new Camera(4.5, 4.5, 1, 0, 0, -.66);
         addKeyListener(camera);
         thread = new Thread(this);
@@ -132,6 +137,7 @@ public class Game extends JFrame implements Runnable{
             if (hasWon == false) {
                 while (delta >= 1) { //Accertati che avvenga solo 60 volte al secondo (u' scem)
                     screen.update(camera, pixels);
+                    screen.drawSprite(camera, pixels, sprites);
                     camera.update(map);
 
                     delta--;

@@ -13,14 +13,15 @@ public class SoundPlayer {
             clip.start();
 
             // numero grosso = riprodotto una volta solo :D
-            while (clip.isRunning()) {
-                Thread.sleep(10);
+            boolean isPlayingSound;
+            if (clip.isRunning()) {
+                isPlayingSound = true;
+            } else {
+                isPlayingSound = false;
             }
             clip.close();
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 }   
