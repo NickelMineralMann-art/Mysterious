@@ -26,9 +26,13 @@ public class Texture {
         }
     }
 
-    public static Texture wood = new Texture("res/texture/wall.png", 64);
-    public static Texture brick = new Texture("res/texture/redbrick.png", 64);
-    public static Texture bluestone = new Texture("res/texture/bluestone.png", 64);
-    public static Texture stone = new Texture("res/texture/greystone.png", 64);
+    public static Texture wall = new Texture("res/texture/wall.png", 64);
+    public static Texture tile = new Texture("res/texture/tiles.png", 64);
+    public static Texture wall_tear = new Texture("res/texture/wall_tear.png", 64);
+    public static Texture tile_pipe = new Texture("res/texture/tiles_pipe.png", 64);
+
+    public static Texture ceiling = new Texture("res/texture/ceiling.png", 64);
+    public static Texture floor = new Texture("res/texture/moquette.png", 64);
+
     public static Texture exit = new Texture("res/texture/exit.png", 64);
 }

@@ -77,8 +77,8 @@ public class Screen {
 
     public int[] update(Camera camera, int[] pixels) {
 
-        Texture floorTex = textures.get(1);
-        Texture ceilTex = textures.get(3);
+        Texture floorTex = textures.get(5);
+        Texture ceilTex = textures.get(4);
 
         // Floor/Ceiling Caster [!]
         for (int y = height / 2 + 1;  y < height; y++) {

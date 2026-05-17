@@ -20,28 +20,28 @@ public class Game extends JFrame implements Runnable{
     public Camera camera;
     public Screen screen;
 
-    public String versione = "2.1.12 RELEASE";
+    public String versione = "3.4.06 RELEASE";
 
     public boolean hasWon = false;
     public boolean wantContinue = false;
 
     public static int[][] map =
             {
-                    {1,1,1,1,1,1,1,2,2,2,2,2,3,3,3},
-                    {1,0,1,0,0,0,0,2,0,0,0,0,0,0,3},
-                    {1,0,4,4,4,4,0,2,0,2,0,0,3,3,3},
-                    {1,0,4,0,0,4,0,0,0,2,0,4,4,4,4},
-                    {1,0,4,0,0,4,0,4,4,4,0,0,0,0,4},
-                    {1,0,4,0,4,4,0,0,0,0,0,2,0,0,4},
-                    {1,0,0,0,2,0,0,0,2,0,0,2,0,0,4},
-                    {1,0,0,0,2,0,4,4,4,4,0,2,0,0,4},
-                    {1,0,0,0,0,0,4,0,0,4,1,1,0,1,1},
-                    {1,0,0,0,2,0,4,0,0,0,0,0,0,0,1},
-                    {1,1,0,1,1,1,4,4,4,4,0,0,0,0,1},
-                    {1,0,0,0,0,1,0,0,0,1,1,1,1,0,1},
-                    {1,0,1,1,1,1,0,0,0,0,0,0,0,0,1},
-                    {1,0,0,0,0,0,0,0,0,1,0,0,0,0,1},
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+                    {1,1,3,3,3,4,3,3,3,3,3,3,3,3,3},
+                    {1,0,3,0,0,0,0,0,0,0,0,0,0,0,4},
+                    {1,0,1,1,1,1,0,1,0,3,0,0,3,0,3},
+                    {1,0,1,0,0,1,0,0,0,4,0,3,3,1,1},
+                    {1,0,1,0,0,1,0,1,1,3,0,0,0,0,1},
+                    {1,0,1,0,1,1,0,0,0,3,0,3,0,0,2},
+                    {1,0,0,0,1,0,0,0,1,0,0,1,0,0,1},
+                    {2,0,0,0,1,0,1,2,1,1,0,1,0,0,1},
+                    {1,0,0,0,0,0,1,0,0,1,1,1,0,1,1},
+                    {1,0,0,0,1,0,1,0,0,0,0,0,0,0,1},
+                    {1,1,0,1,1,3,3,3,4,3,0,0,0,0,1},
+                    {2,0,0,0,0,3,0,0,0,3,1,2,1,0,1},
+                    {1,0,3,3,3,3,0,0,0,0,0,0,0,0,1},
+                    {1,0,0,0,0,0,0,0,0,3,0,0,0,0,1},
+                    {1,1,3,3,3,3,4,3,3,3,1,1,1,2,1}
             };
 
     private Thread thread;
@@ -52,10 +52,14 @@ public class Game extends JFrame implements Runnable{
 
     public Game() {
         textures = new ArrayList<Texture>();
-        textures.add(Texture.wood);
-        textures.add(Texture.brick);
-        textures.add(Texture.bluestone);
-        textures.add(Texture.stone);
+        textures.add(Texture.wall);
+        textures.add(Texture.wall_tear);
+        textures.add(Texture.tile);
+        textures.add(Texture.tile_pipe);
+
+        textures.add(Texture.ceiling);
+        textures.add(Texture.floor);
+
         textures.add(Texture.exit);
 
         sprites = new ArrayList<>();
@@ -67,8 +71,10 @@ public class Game extends JFrame implements Runnable{
         image = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 
+
+
         // Dichiarazione per gli sprite/entità di gioco
-        sprites.add(new Sprite(1.5, 13, 4));
+        sprites.add(new Sprite(1.5, 13.8, 6));
 
         setSize(640, 480);
         setResizable(false);
@@ -124,7 +130,9 @@ public class Game extends JFrame implements Runnable{
         double delta = 0;
         requestFocus();
 
-        SoundPlayer soundPlayer= new SoundPlayer();
+        // Suono ambientale, Loop
+        SoundPlayer ambiancePlayer= new SoundPlayer("res/sound/ambiance_halogen.wav",true);
+        SoundPlayer soundPlayer= new SoundPlayer("res/sound/victory_fanfare.wav",false);
 
         while(running) {
             if(hasWon && wantContinue) {
@@ -149,12 +157,16 @@ public class Game extends JFrame implements Runnable{
                 try {
                     image = ImageIO.read(new File("res/texture/haivinto.png"));
                     // System.out.println("Caricata: " + image.getWidth() + "x" + image.getHeight());
-                    soundPlayer.playSound("res/sound/victory_fanfare.wav");
+                    if (!soundPlayer.isPlaying()) {
+                        ambiancePlayer.stop();
+                        soundPlayer.play();
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+            ambiancePlayer.play();
             render();
         }
     }
