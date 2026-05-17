@@ -12,7 +12,6 @@ public class SoundPlayer {
             clip.open(audioIn);
             clip.start();
 
-            // numero grosso = riprodotto una volta solo :D
             boolean isPlayingSound;
             if (clip.isRunning()) {
                 isPlayingSound = true;

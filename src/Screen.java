@@ -50,14 +50,14 @@ public class Screen {
                 // [CONTROLLO Z BUFFER]
                 if (transformY >= zBuffer[x]) continue;
 
-                int texX = (int)((x - (spriteScreenX- spriteWidth) / 2) ^ tex.SIZE / spriteWidth);
+                int texX = (int)((x - (spriteScreenX - spriteWidth / 2)) * tex.SIZE / spriteWidth);
 
                 for (int y = drawStartY; y < drawEndY; y++) {
                     int texY = (int)((y - (height / 2 - spriteHeight / 2)) * tex.SIZE / spriteHeight);
                     int colour = tex.pixels[texX + texY * tex.SIZE];
 
-                    // Salta i pixel definiti trasparenti (Magenta = 0xFFFF0FF)
-                    if ((colour & 0xFFFF0FF) == 0) continue;
+                    // Salta i pixel definiti trasparenti (Nero puro = 0x00FFFFFF)
+                    if ((colour & 0x00FFFFFF) == 0) continue;
 
                     pixels[x + y * width] = colour;
                 }
@@ -147,10 +147,9 @@ public class Screen {
 
             //Direzione movimento data dal vettore giocatore
             int stepX, stepY;
-            boolean hit = false;//was a wall hit
-            int side=0;//was the wall vertical or horizontal
+            boolean hit = false;//ha colpito un muro?
+            int side=0;//era verticale o orizzontale? (Necessario per shading)
 
-            //Figure out the step direction and initial distance to a side
             if (rayDirX < 0)
             {
                 stepX = -1;
@@ -172,9 +171,9 @@ public class Screen {
                 sideDistY = (mapY + 1.0 - camera.yPos) * deltaDistY;
             }
 
-            //Loop to find where the ray hits a wall
+            //Loop per raycaster, continua per controllare se colpisce una parete
             while(!hit) {
-                //Jump to next square
+                //Salta alla prossima cella
                 if (sideDistX < sideDistY)
                 {
                     sideDistX += deltaDistX;
@@ -198,12 +197,12 @@ public class Screen {
             else
                 perpWallDist = Math.abs((mapY - camera.yPos + (1 - stepY) / 2) / rayDirY);
 
-            //Now calculate the height of the wall based on the distance from the camera
+            //Calcola altezza della striscia verticale del muro in funzione della distanza muro-telecamera giocatore
             int lineHeight;
             if(perpWallDist > 0) lineHeight = Math.abs((int)(height / perpWallDist));
             else lineHeight = height;
 
-            //calculate lowest and highest pixel to fill in current stripe
+            //calcola pixel più alto e basso della striscia e interpola, disegnando una riga tra i due punti
             int drawStart = -lineHeight/2+ height/2;
             if(drawStart < 0)
                 drawStart = 0;
@@ -211,21 +210,21 @@ public class Screen {
             if(drawEnd >= height)
                 drawEnd = height - 1;
 
-            //add a texture
+            //aggiunge la texture basato sull'indice (CFR Texture.java)
             int texNum = map[mapX][mapY] - 1;
-            double wallX;//Exact position of where wall was hit
-            if(side==1) {//If its a y-axis wall
+            double wallX;//Posizione esatta dove ha colpito la parete
+            if(side==1) {//Se è orizzontale o verticale
                 wallX = (camera.xPos + ((mapY - camera.yPos + (1 - stepY) / 2) / rayDirY) * rayDirX);
-            } else {//X-axis wall
+            } else {
                 wallX = (camera.yPos + ((mapX - camera.xPos + (1 - stepX) / 2) / rayDirX) * rayDirY);
             }
             wallX-=Math.floor(wallX);
 
-            //x coordinate on the texture
+            //coordinata X della texture
             int texX = (int)(wallX * (textures.get(texNum).SIZE));
             if(side == 0 && rayDirX > 0) texX = textures.get(texNum).SIZE - texX - 1;
             if(side == 1 && rayDirY < 0) texX = textures.get(texNum).SIZE - texX - 1;
-            //calculate y coordinate on texture
+            //coordinata Y della texture
             for(int y=drawStart; y<drawEnd; y++) {
                 int texY = (((y*2 - height + lineHeight) << 6) / lineHeight) / 2;
                 int color;

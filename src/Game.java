@@ -56,17 +56,19 @@ public class Game extends JFrame implements Runnable{
         textures.add(Texture.brick);
         textures.add(Texture.bluestone);
         textures.add(Texture.stone);
+        textures.add(Texture.exit);
 
         sprites = new ArrayList<>();
         screen = new Screen(map, mapWidth, mapHeight, textures, 640, 480);
-
-        sprites.add(new Sprite(3.5, 3.5, 1));
 
         camera = new Camera(4.5, 4.5, 1, 0, 0, -.66);
         addKeyListener(camera);
         thread = new Thread(this);
         image = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
+
+        // Dichiarazione per gli sprite/entità di gioco
+        sprites.add(new Sprite(1.5, 13, 4));
 
         setSize(640, 480);
         setResizable(false);
@@ -135,7 +137,7 @@ public class Game extends JFrame implements Runnable{
             delta = delta + ((now - lastTime) / ns);
             lastTime = now;
             if (hasWon == false) {
-                while (delta >= 1) { //Accertati che avvenga solo 60 volte al secondo (u' scem)
+                while (delta >= 1) { //Accertati che avvenga solo 60 volte al secondo
                     screen.update(camera, pixels);
                     screen.drawSprite(camera, pixels, sprites);
                     camera.update(map);
